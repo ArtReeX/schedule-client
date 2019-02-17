@@ -1,22 +1,18 @@
 // imports
 import React from "react";
-import { Header } from "react-native-elements";
+import { Header, Text, Icon } from "react-native-elements";
 
 // classes
 const CHeader = () => {
   return (
     <Header
-      leftComponent={{ icon: "list" }}
-      centerComponent={{ text: "График занятий" }}
-      rightComponent={{ icon: "autorenew" }}
-      containerStyle={style}
+      centerComponent={<Text>График занятий</Text>}
+      rightComponent={<Icon name="autorenew" />}
+      containerStyle={{
+        backgroundColor: "#FFFFFF"
+      }}
     />
   );
-};
-
-// styles
-const style = {
-  backgroundColor: "#FFFFFF"
 };
 
 // exports

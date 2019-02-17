@@ -1,7 +1,7 @@
 // imports
 import React from "react";
 import PropTypes from "prop-types";
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import { ListItem, Text } from "react-native-elements";
 
 // name of discipline to icon
@@ -29,18 +29,16 @@ const UTCToDate = utc => {
 class CSchedule extends React.Component {
   constructor(props) {
     super(props);
-
-    const { list } = this.props;
-    list.forEach(discipline => {
-      discipline.icon = nameToIcon(discipline.name);
-    });
-
-    this.state = { list };
-
+    this.state = { list: this.props.list };
     this.renderList = this.renderList.bind(this);
   }
 
   renderList(list) {
+    // adding icons
+    list.forEach(discipline => {
+      discipline.icon = nameToIcon(discipline.name);
+    });
+
     return list.map((discipline, index) => (
       <ListItem
         key={index}
@@ -59,7 +57,11 @@ class CSchedule extends React.Component {
   }
 
   render() {
-    return <View>{this.renderList(this.state.list)}</View>;
+    return (
+      <View>
+        <ScrollView>{this.renderList(this.state.list)}</ScrollView>
+      </View>
+    );
   }
 }
 

@@ -6,11 +6,9 @@ import { ButtonGroup } from "react-native-elements";
 class CButtonGroup extends React.PureComponent {
   constructor() {
     super();
-
     this.state = {
       selectedIndex: new Date().getDay()
     };
-
     this.updateSchedule = this.updateSchedule.bind(this);
   }
 
@@ -19,22 +17,16 @@ class CButtonGroup extends React.PureComponent {
   }
 
   render() {
-    const buttons = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-    const { selectedIndex } = this.state;
-
     return (
       <ButtonGroup
         onPress={this.updateSchedule}
-        selectedIndex={selectedIndex}
-        buttons={buttons}
-        containerStyle={style}
+        selectedIndex={this.state.selectedIndex}
+        buttons={["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"]}
+        containerStyle={{ height: 40 }}
       />
     );
   }
 }
-
-// styles
-const style = { height: 40 };
 
 // exports
 export default CButtonGroup;

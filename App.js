@@ -1,7 +1,9 @@
 // imports
 import React from "react";
+import { View } from "react-native";
 import { ThemeProvider } from "react-native-elements";
 import CHeader from "./components/Header";
+import CSetting from "./components/Setting";
 import CInfoString from "./components/InfoString";
 import CButtonGroup from "./components/ButtonGroup";
 import CSchedule from "./components/Schedule";
@@ -50,9 +52,12 @@ export default class App extends React.Component {
     return (
       <ThemeProvider>
         <CHeader />
-        <CInfoString discipline="Физкультура" />
-        <CButtonGroup />
-        <CSchedule list={testData} />
+        <CSetting />
+        <View nativeID="content">
+          <CInfoString discipline="Физкультура" />
+          <CButtonGroup />
+          <CSchedule list={testData} />
+        </View>
       </ThemeProvider>
     );
   }
