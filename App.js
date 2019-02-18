@@ -7,9 +7,9 @@ import CSetting from "./components/Setting";
 import CInfoString from "./components/InfoString";
 import CButtonGroup from "./components/ButtonGroup";
 import CSchedule from "./components/Schedule";
+import reducers from "./reducers";
 
-import schedule from "./reducers/schedule";
-const store = createStore(schedule);
+const store = createStore(reducers);
 
 class App extends React.Component {
   render() {

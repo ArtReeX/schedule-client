@@ -51,7 +51,7 @@ class CSchedule extends React.Component {
   }
 
   render() {
-    const { schedule } = this.props.store;
+    const { schedule } = this.props.store.schedule;
     return (
       <View>
         <ScrollView>{this.renderList(schedule)}</ScrollView>

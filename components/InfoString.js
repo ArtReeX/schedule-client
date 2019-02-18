@@ -5,7 +5,7 @@ import { Text } from "react-native-elements";
 
 class CInfoString extends React.PureComponent {
   render() {
-    const { currentDiscipline } = this.props.store;
+    const { currentDiscipline } = this.props.store.schedule;
     return (
       <View style={{ margin: 10 }}>
         <Text style={{ textAlign: "center", fontWeight: "bold" }}>

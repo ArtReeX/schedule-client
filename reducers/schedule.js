@@ -1,8 +1,9 @@
 const initialState = { currentDiscipline: "-", schedule: [] };
 const schedule = (state = testState, action) => {
-  switch (action.type) {
+  const { type, schedule } = action;
+  switch (type) {
     case "UPDATE_SCHELDULE":
-      return { ...state, shedule: action.schedule };
+      return { ...state, schedule };
     default:
       return state;
   }
