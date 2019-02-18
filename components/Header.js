@@ -1,8 +1,6 @@
-// imports
 import React from "react";
 import { Header, Text, Icon } from "react-native-elements";
 
-// classes
 const CHeader = () => {
   return (
     <Header
@@ -15,5 +13,4 @@ const CHeader = () => {
   );
 };
 
-// exports
 export default CHeader;

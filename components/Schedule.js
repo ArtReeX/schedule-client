@@ -1,10 +1,8 @@
-// imports
 import React from "react";
-import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import { View, ScrollView } from "react-native";
 import { ListItem, Text } from "react-native-elements";
 
-// name of discipline to icon
 const nameToIcon = name => {
   switch (name) {
     case "Физкультура":
@@ -20,68 +18,49 @@ const nameToIcon = name => {
   }
 };
 
-// UTC time to date
 const UTCToDate = utc => {
   return new Date(utc).toLocaleTimeString("ru");
 };
 
-// classes
 class CSchedule extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { list: this.props.list };
     this.renderList = this.renderList.bind(this);
   }
 
   renderList(list) {
-    // adding icons
     list.forEach(discipline => {
       discipline.icon = nameToIcon(discipline.name);
     });
 
-    return list.map((discipline, index) => (
-      <ListItem
-        key={index}
-        leftIcon={{ name: discipline.icon }}
-        title={discipline.name}
-        subtitle={discipline.teacher}
-        badge={{
-          value:
-            UTCToDate(discipline.timeStart) +
-            "-" +
-            UTCToDate(discipline.timeEnd),
-          containerStyle: { marginTop: -20 }
-        }}
-      />
-    ));
+    return list.map((discipline, index) => {
+      const { icon, name, teacher, timeStart, timeEnd } = discipline;
+      return (
+        <ListItem
+          key={index}
+          leftIcon={{ name: icon }}
+          title={name}
+          subtitle={teacher}
+          badge={{
+            value: UTCToDate(timeStart) + "-" + UTCToDate(timeEnd),
+            containerStyle: { marginTop: -20 }
+          }}
+        />
+      );
+    });
   }
 
   render() {
+    const { schedule } = this.props.store;
     return (
       <View>
-        <ScrollView>{this.renderList(this.state.list)}</ScrollView>
+        <ScrollView>{this.renderList(schedule)}</ScrollView>
       </View>
     );
   }
 }
 
-// check types
-CSchedule.propTypes = {
-  list: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      teacher: PropTypes.string.isRequired,
-      room: PropTypes.number.isRequired,
-      timeStart: PropTypes.number.isRequired,
-      timeEnd: PropTypes.number.isRequired
-    })
-  )
-};
-
-// default props
-CSchedule.defaultProps = {
-  list: []
-};
-
-// exports
-export default CSchedule;
+export default connect(
+  state => ({ store: state }),
+  dispatchEvent => ({})
+)(CSchedule);

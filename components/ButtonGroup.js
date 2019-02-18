@@ -1,8 +1,6 @@
-// imports
 import React from "react";
 import { ButtonGroup } from "react-native-elements";
 
-// classes
 class CButtonGroup extends React.PureComponent {
   constructor() {
     super();
@@ -17,10 +15,11 @@ class CButtonGroup extends React.PureComponent {
   }
 
   render() {
+    const { selectedIndex } = this.state;
     return (
       <ButtonGroup
         onPress={this.updateSchedule}
-        selectedIndex={this.state.selectedIndex}
+        selectedIndex={selectedIndex}
         buttons={["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"]}
         containerStyle={{ height: 40 }}
       />
@@ -28,5 +27,4 @@ class CButtonGroup extends React.PureComponent {
   }
 }
 
-// exports
 export default CButtonGroup;
