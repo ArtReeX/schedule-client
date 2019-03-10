@@ -8,52 +8,19 @@ class CSetting extends React.Component {
     super(props);
     this.state = {
       interface: { settingVisible: false },
-      settings: {
-        level: "bachelor",
-        institute: "ifmit",
-        course: 1,
-        group: "pi"
+      params: {
+        groupID: 0
       }
     };
   }
   componentDidMount() {
-    AsyncStorage.getItem("level", (error, level) => {
+    AsyncStorage.getItem("groupID", (error, groupID) => {
       if (!error)
         this.setState({
           ...this.state,
-          settings: {
-            ...this.state.settings,
-            level
-          }
-        });
-    });
-    AsyncStorage.getItem("institute", (error, institute) => {
-      if (!error)
-        this.setState({
-          ...this.state,
-          settings: {
-            ...this.state.settings,
-            institute
-          }
-        });
-    });
-    AsyncStorage.getItem("course", (error, course) => {
-      if (!error)
-        this.setState({
-          ...this.state,
-          settings: {
-            ...this.state.settings,
-            course
-          }
-        });
-    });
-    AsyncStorage.getItem("group", (error, group) => {
-      if (!error)
-        this.setState({
-          ...this.state,
-          settings: {
-            ...this.state.settings,
-            group
+          params: {
+            ...this.state.params,
+            groupID
           }
         });
     });
@@ -61,7 +28,7 @@ class CSetting extends React.Component {
   render() {
     const style = { textAlign: "center", fontWeight: "bold" };
     const { settingVisible } = this.state.interface;
-    const { level, institute, course, group } = this.state.settings;
+    const { groupID } = this.state.params;
     return (
       <View>
         <Button
@@ -80,7 +47,7 @@ class CSetting extends React.Component {
             backgroundColor: "#808080"
           }}
           onPress={() => {
-            const { settings } = this.state;
+            const { params } = this.state;
             this.setState({
               ...this.state,
               interface: {
@@ -95,96 +62,28 @@ class CSetting extends React.Component {
           style={{ display: settingVisible ? "block" : "none" }}
         >
           <Card>
-            <View nativeID="level">
-              <Text style={style}>Степень</Text>
-              <Picker
-                selectedValue={level}
-                onValueChange={itemValue => {
-                  AsyncStorage.setItem("level", itemValue, () => {
-                    const { settings } = this.state;
-                    this.setState({
-                      ...this.state,
-                      settings: {
-                        ...this.state.settings,
-                        level: itemValue
-                      }
-                    });
-                    this.props.updateSettings(settings);
-                  });
-                }}
-              >
-                <Picker.Item label="Бакалавр" value="bachelor" />
-                <Picker.Item label="Магистр" value="master" />
-              </Picker>
-            </View>
-            <View nativeID="institute">
-              <Text style={style}>Институт</Text>
-              <Picker
-                selectedValue={institute}
-                onValueChange={itemValue => {
-                  AsyncStorage.setItem("institute", itemValue, () => {
-                    const { settings } = this.state;
-                    this.setState({
-                      ...this.state,
-                      settings: {
-                        ...this.state.settings,
-                        institute: itemValue
-                      }
-                    });
-                    this.props.updateSettings(settings);
-                  });
-                }}
-              >
-                <Picker.Item label="ИФМИТ" value="ifmit" />
-                <Picker.Item label="ФИЗВОЗП" value="fizwozp" />
-              </Picker>
-            </View>
-            <View nativeID="course">
-              <Text style={style}>Курс</Text>
-              <Picker
-                selectedValue={course}
-                onValueChange={itemValue =>
-                  AsyncStorage.setItem("course", itemValue, () => {
-                    const { settings } = this.state;
-                    this.setState({
-                      ...this.state,
-                      settings: {
-                        ...this.state.settings,
-                        course: itemValue
-                      }
-                    });
-                    this.props.updateSettings(settings);
-                  })
-                }
-              >
-                <Picker.Item label="1" value="1" />
-                <Picker.Item label="2" value="2" />
-                <Picker.Item label="3" value="3" />
-                <Picker.Item label="4" value="4" />
-              </Picker>
-            </View>
             <View nativeID="group">
               <Text style={style}>Группа</Text>
               <Picker
-                selectedValue={group}
+                selectedValue={groupID}
                 onValueChange={itemValue => {
-                  AsyncStorage.setItem("group", itemValue, () => {
-                    const { settings } = this.state;
+                  AsyncStorage.setItem("groupID", itemValue, () => {
+                    const { params } = this.state;
                     this.setState({
                       ...this.state,
-                      settings: {
-                        ...this.state.settings,
-                        group: itemValue
+                      params: {
+                        ...this.state.params,
+                        groupID: itemValue
                       }
                     });
-                    this.props.updateSettings(settings);
+                    this.props.updateGroup(params.groupID);
                   });
                 }}
               >
-                <Picker.Item label="Программная инженерия" value="pi" />
+                <Picker.Item label="Программная инженерия" value="0" />
                 <Picker.Item
                   label="Информационная и вычислительная техника"
-                  value="ivt"
+                  value="1"
                 />
               </Picker>
             </View>
@@ -198,8 +97,8 @@ class CSetting extends React.Component {
 export default connect(
   state => ({ store: state }),
   dispatchEvent => ({
-    updateSettings: settings => {
-      dispatchEvent({ type: "UPDATE_SETTINGS", settings });
+    updateGroup: groupID => {
+      dispatchEvent({ type: "UPDATE_GROUP", groupID });
     }
   })
 )(CSetting);

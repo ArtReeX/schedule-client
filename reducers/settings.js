@@ -1,12 +1,14 @@
-const initialState = {};
-const schedule = (state = initialState, action) => {
-  const { type, settings } = action;
+const initialState = { loaderVisible: false };
+const settings = (state = initialState, action) => {
+  const { type } = action;
   switch (type) {
-    case "UPDATE_SETTINGS":
-      return { ...state, settings };
+    case "ENABLE_LOADER":
+      return { ...state, loaderVisible: true };
+    case "DISABLE_LOADER":
+      return { ...state, loaderVisible: false };
     default:
       return state;
   }
 };
 
-export default schedule;
+export default settings;
