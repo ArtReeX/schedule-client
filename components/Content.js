@@ -8,7 +8,8 @@ import CSchedule from "./Schedule";
 
 class CContent extends React.PureComponent {
   render() {
-    const { loaderVisible } = this.props.store.settings;
+    const { loaderVisible } = this.props.store.face;
+
     return (
       <View>
         <View
@@ -20,9 +21,13 @@ class CContent extends React.PureComponent {
             display: loaderVisible ? "flex" : "none"
           }}
         >
-          <Bars size={15} color="#808080" />
+          <Bars size={15} style={{ color: "#808080" }} />
         </View>
-        <View style={{ display: !loaderVisible ? "flex" : "none" }}>
+        <View
+          style={{
+            display: !loaderVisible ? "flex" : "none"
+          }}
+        >
           <CInfoString />
           <CButtonGroup />
           <CSchedule />

@@ -1,8 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { ButtonGroup } from "react-native-elements";
-import axios from "axios";
-import config from "../config.json";
+import { getSchedule } from "../requests";
 
 class CButtonGroup extends React.PureComponent {
   constructor() {
@@ -13,19 +12,28 @@ class CButtonGroup extends React.PureComponent {
     this.updateSchedule = this.updateSchedule.bind(this);
   }
 
+  dayToDate(name) {
+    switch (name) {
+      case "Вс":
+      case "Пн":
+      case "Вт":
+      case "Ср":
+      case "Чт":
+      case "Пт":
+      case "Сб":
+    }
+  }
+
   updateSchedule(selectedIndex) {
-    const { day, groupID } = this.props.store.params;
-    const { protocol, url, port } = config.server;
-
     this.setState({ selectedIndex });
-    this.props.updateDay(selectedIndex);
+    this.props.updateDay(dayToDate(selectedIndex));
 
-    axios
-      .get(`${protocol}://${url}:${port}/getSchedule`, {
-        params: { day, groupID }
-      })
-      .then(this.props.disableLoader())
-      .catch(this.props.enableLoader());
+    const { enableLoader, disableLoader } = this.props;
+    const { day, groupID } = this.props.store.settings;
+
+    getSchedule(day, groupID)
+      .then(disableLoader())
+      .catch(enableLoader());
   }
 
   render() {

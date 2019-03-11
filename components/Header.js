@@ -1,38 +1,36 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Header, Text, Icon } from "react-native-elements";
-import axios from "axios";
-import config from "../config.json";
 
-class CHeader extends React.PureComponent {
+export default class CHeader extends React.PureComponent {
   render() {
     return (
       <Header
-        centerComponent={<Text>График занятий</Text>}
-        rightComponent={
-          <Icon
-            name="autorenew"
-            onPress={() => {
-              const { day, groupID } = this.props.store.params;
-              const { protocol, url, port } = config.server;
-              axios
-                .get(`${protocol}://${url}:${port}/getSchedule`, {
-                  params: { day, groupID }
-                })
-                .then(this.props.disableLoader())
-                .catch(this.props.enableLoader());
-            }}
-          />
-        }
-        containerStyle={{
-          backgroundColor: "#FFFFFF"
-        }}
+        centerComponent={CAppName}
+        rightComponent={CUpdateButton}
+        containerStyle={{ backgroundColor: "#FFFFFF" }}
       />
     );
   }
 }
+class CUpdateButton extends React.PureComponent {
+  onPress() {
+    const { enableLoader, disableLoader } = this.props;
+    const { day, groupID } = this.props.store.settings;
 
-export default connect(
+    requests
+      .getSchedule(day, groupID)
+      .then(disableLoader())
+      .catch(enableLoader());
+  }
+  render() {
+    return <Icon name="autorenew" onPress={onPress} />;
+  }
+}
+
+const CAppName = () => <Text>График занятий</Text>;
+
+connect(
   state => ({ store: state }),
   dispatchEvent => ({
     enableLoader: params => {
@@ -42,4 +40,4 @@ export default connect(
       dispatchEvent({ type: "DISABLE_LOADER" });
     }
   })
-)(CHeader);
+)(CUpdateButton);

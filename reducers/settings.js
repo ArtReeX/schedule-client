@@ -1,14 +1,11 @@
-const initialState = { loaderVisible: false };
-const settings = (state = initialState, action) => {
-  const { type } = action;
-  switch (type) {
-    case "ENABLE_LOADER":
-      return { ...state, loaderVisible: true };
-    case "DISABLE_LOADER":
-      return { ...state, loaderVisible: false };
+const initialState = { day: "00-00-00", groupID: 0 };
+export default (state = initialState, action) => {
+  switch (action.type) {
+    case "UPDATE_DAY":
+      return { ...state, day: action.day };
+    case "UPDATE_GROUP":
+      return { ...state, groupID: action.param };
     default:
       return state;
   }
 };
-
-export default settings;

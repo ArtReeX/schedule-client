@@ -2,10 +2,10 @@ import React from "react";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 import { ScrollView } from "react-native";
+import reducers from "./reducers";
 import CHeader from "./components/Header";
 import CContent from "./components/Content";
 import CSetting from "./components/Setting";
-import reducers from "./reducers";
 
 const store = createStore(reducers);
 

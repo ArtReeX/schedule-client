@@ -1,15 +1,14 @@
 const initialState = { currentDiscipline: "-", schedule: [] };
-const schedule = (state = testState, action) => {
-  const { type, schedule } = action;
-  switch (type) {
-    case "UPDATE_SCHELDULE":
-      return { ...state, schedule };
+export default (state = testState, action) => {
+  switch (action.type) {
+    case "UPDATE_CURRENT_DISCIPLINE":
+      return { ...state, currentDiscipline: action.currentDiscipline };
+    case "UPDATE_SCHEDULE":
+      return { ...state, schedule: action.schedule };
     default:
       return state;
   }
 };
-
-export default schedule;
 
 const testState = {
   currentDiscipline: "Физкультура",

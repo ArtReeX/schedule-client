@@ -1,26 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { View, ScrollView } from "react-native";
-import { ListItem, Text } from "react-native-elements";
-
-const nameToIcon = name => {
-  switch (name) {
-    case "Физкультура":
-      return "accessibility";
-    case "Базы данных":
-      return "reorder";
-    case "Экономика":
-      return "timeline";
-    case "WEB-программирование":
-      return "code";
-    default:
-      return "label";
-  }
-};
-
-const UTCToDate = utc => {
-  return new Date(utc).toLocaleTimeString("ru");
-};
+import { ListItem } from "react-native-elements";
 
 class CSchedule extends React.Component {
   constructor(props) {
@@ -28,9 +9,28 @@ class CSchedule extends React.Component {
     this.renderList = this.renderList.bind(this);
   }
 
+  nameToIcon(name) {
+    switch (name) {
+      case "Физкультура":
+        return "accessibility";
+      case "Базы данных":
+        return "reorder";
+      case "Экономика":
+        return "timeline";
+      case "WEB-программирование":
+        return "code";
+      default:
+        return "label";
+    }
+  }
+
+  UTCToDate(utc) {
+    return new Date(utc).toLocaleTimeString("ru");
+  }
+
   renderList(list) {
     list.forEach(discipline => {
-      discipline.icon = nameToIcon(discipline.name);
+      discipline.icon = this.nameToIcon(discipline.name);
     });
 
     return list.map((discipline, index) => {
@@ -42,7 +42,7 @@ class CSchedule extends React.Component {
           title={name}
           subtitle={teacher}
           badge={{
-            value: UTCToDate(timeStart) + "-" + UTCToDate(timeEnd),
+            value: this.UTCToDate(timeStart) + "-" + this.UTCToDate(timeEnd),
             containerStyle: { marginTop: -20 }
           }}
         />

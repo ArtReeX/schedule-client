@@ -2,33 +2,55 @@ import React from "react";
 import { connect } from "react-redux";
 import { View, Picker, AsyncStorage } from "react-native";
 import { Card, Text, Button, Icon } from "react-native-elements";
+import { getGroups } from "../requests";
 
 class CSetting extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       interface: { settingVisible: false },
-      params: {
+      settings: {
         groupID: 0
-      }
+      },
+      groups: []
     };
+    this.renderGroups = this.renderGroups.bind(this);
   }
+
   componentDidMount() {
-    AsyncStorage.getItem("groupID", (error, groupID) => {
-      if (!error)
+    getGroups()
+      .then(groups => {
+        AsyncStorage.getItem("groupID", (error, groupID) => {
+          if (!error)
+            this.setState({
+              ...this.state,
+              settings: {
+                ...this.state.settings,
+                groupID
+              },
+              groups
+            });
+        });
+      })
+      .catch(() => {
         this.setState({
           ...this.state,
-          params: {
-            ...this.state.params,
-            groupID
-          }
+          groups: [{ name: "test1", id: 1 }, { name: "test2", id: 13 }]
         });
-    });
+        console.log(this.state);
+      });
   }
+
+  renderGroups(groups = this.groups) {
+    return groups.map((group, index) => (
+      <Picker.Item label={group.name} value={group.id} key={group.id} />
+    ));
+  }
+
   render() {
-    const style = { textAlign: "center", fontWeight: "bold" };
     const { settingVisible } = this.state.interface;
-    const { groupID } = this.state.params;
+    const { groupID } = this.state.settings;
+
     return (
       <View>
         <Button
@@ -47,7 +69,6 @@ class CSetting extends React.Component {
             backgroundColor: "#808080"
           }}
           onPress={() => {
-            const { params } = this.state;
             this.setState({
               ...this.state,
               interface: {
@@ -63,28 +84,29 @@ class CSetting extends React.Component {
         >
           <Card>
             <View nativeID="group">
-              <Text style={style}>Группа</Text>
+              <Text style={{ textAlign: "center", fontWeight: "bold" }}>
+                Группа
+              </Text>
               <Picker
                 selectedValue={groupID}
                 onValueChange={itemValue => {
-                  AsyncStorage.setItem("groupID", itemValue, () => {
-                    const { params } = this.state;
-                    this.setState({
-                      ...this.state,
-                      params: {
-                        ...this.state.params,
-                        groupID: itemValue
-                      }
-                    });
-                    this.props.updateGroup(params.groupID);
-                  });
+                  AsyncStorage.setItem(
+                    "groupID",
+                    JSON.stringify(itemValue),
+                    () => {
+                      this.setState({
+                        ...this.state,
+                        settings: {
+                          ...this.state.settings,
+                          groupID: itemValue
+                        }
+                      });
+                      this.props.updateGroup(this.state.groupID);
+                    }
+                  );
                 }}
               >
-                <Picker.Item label="Программная инженерия" value="0" />
-                <Picker.Item
-                  label="Информационная и вычислительная техника"
-                  value="1"
-                />
+                {this.renderGroups(this.state.groups)}
               </Picker>
             </View>
           </Card>

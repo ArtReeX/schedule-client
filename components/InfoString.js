@@ -16,7 +16,4 @@ class CInfoString extends React.PureComponent {
   }
 }
 
-export default connect(
-  state => ({ store: state }),
-  dispatchEvent => ({})
-)(CInfoString);
+export default connect(state => ({ store: state }))(CInfoString);
