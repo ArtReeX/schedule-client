@@ -10,29 +10,44 @@ class CButtonGroup extends React.PureComponent {
       selectedIndex: new Date().getDay()
     };
     this.updateSchedule = this.updateSchedule.bind(this);
+    this.selectedDate = this.selectedDate.bind(this);
   }
 
-  dayToDate(name) {
-    switch (name) {
-      case "Вс":
-      case "Пн":
-      case "Вт":
-      case "Ср":
-      case "Чт":
-      case "Пт":
-      case "Сб":
+  selectedDate(day) {
+    const difference = day - new Date().getDay();
+    const msPerDay = 86400000;
+    const format = "ru-RU";
+
+    if (difference < 0) {
+      return new Date(
+        new Date().setTime(
+          new Date(new Date().getTime() - msPerDay * Math.abs(difference))
+        )
+      ).toLocaleDateString(format);
+    } else if (difference > 0) {
+      return new Date(
+        new Date().setTime(
+          new Date(new Date().getTime() + msPerDay * Math.abs(difference))
+        )
+      ).toLocaleDateString(format);
+    } else {
+      return new Date().toLocaleDateString(format);
     }
   }
 
   updateSchedule(selectedIndex) {
     this.setState({ selectedIndex });
-    this.props.updateDay(dayToDate(selectedIndex));
+    this.props.updateDay(this.selectedDate(selectedIndex));
 
     const { enableLoader, disableLoader } = this.props;
     const { day, groupID } = this.props.store.settings;
 
+    enableLoader();
     getSchedule(day, groupID)
-      .then(disableLoader())
+      .then(response => {
+        updateSchedule(response);
+        disableLoader();
+      })
       .catch(enableLoader());
   }
 
@@ -52,14 +67,17 @@ class CButtonGroup extends React.PureComponent {
 export default connect(
   state => ({ store: state }),
   dispatchEvent => ({
-    enableLoader: params => {
+    enableLoader: () => {
       dispatchEvent({ type: "ENABLE_LOADER" });
     },
-    disableLoader: params => {
+    disableLoader: () => {
       dispatchEvent({ type: "DISABLE_LOADER" });
     },
     updateDay: day => {
       dispatchEvent({ type: "UPDATE_DAY", day });
+    },
+    updateSchedule: params => {
+      dispatchEvent({ type: "UPDATE_SCHEDULE", params });
     }
   })
 )(CButtonGroup);

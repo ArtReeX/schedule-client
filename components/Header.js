@@ -15,12 +15,16 @@ export default class CHeader extends React.PureComponent {
 }
 class CUpdateButton extends React.PureComponent {
   onPress() {
-    const { enableLoader, disableLoader } = this.props;
+    const { enableLoader, disableLoader, updateSchedule } = this.props;
     const { day, groupID } = this.props.store.settings;
 
+    enableLoader();
     requests
       .getSchedule(day, groupID)
-      .then(disableLoader())
+      .then(response => {
+        updateSchedule(response);
+        disableLoader();
+      })
       .catch(enableLoader());
   }
   render() {
@@ -33,11 +37,14 @@ const CAppName = () => <Text>График занятий</Text>;
 connect(
   state => ({ store: state }),
   dispatchEvent => ({
-    enableLoader: params => {
+    enableLoader: () => {
       dispatchEvent({ type: "ENABLE_LOADER" });
     },
-    disableLoader: params => {
+    disableLoader: () => {
       dispatchEvent({ type: "DISABLE_LOADER" });
+    },
+    updateSchedule: params => {
+      dispatchEvent({ type: "UPDATE_SCHEDULE", params });
     }
   })
 )(CUpdateButton);

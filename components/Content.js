@@ -21,7 +21,7 @@ class CContent extends React.PureComponent {
             display: loaderVisible ? "flex" : "none"
           }}
         >
-          <Bars size={15} style={{ color: "#808080" }} />
+          <Bars size={15} color="#808080" />
         </View>
         <View
           style={{

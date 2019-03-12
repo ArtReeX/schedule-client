@@ -18,32 +18,28 @@ class CSetting extends React.Component {
   }
 
   componentDidMount() {
-    getGroups()
-      .then(groups => {
-        AsyncStorage.getItem("groupID", (error, groupID) => {
-          if (!error)
-            this.setState({
-              ...this.state,
-              settings: {
-                ...this.state.settings,
-                groupID
-              },
-              groups
-            });
-        });
-      })
-      .catch(() => {
-        this.setState({
-          ...this.state,
-          groups: [{ name: "test1", id: 1 }, { name: "test2", id: 13 }]
-        });
-        console.log(this.state);
+    getGroups().then(groups => {
+      AsyncStorage.getItem("groupID", (error, groupID) => {
+        if (!error)
+          this.setState({
+            ...this.state,
+            settings: {
+              ...this.state.settings,
+              groupID
+            },
+            groups
+          });
       });
+    });
   }
 
   renderGroups(groups = this.groups) {
     return groups.map((group, index) => (
-      <Picker.Item label={group.name} value={group.id} key={group.id} />
+      <Picker.Item
+        label={group.name}
+        value={JSON.stringify(group.id)}
+        key={group.id}
+      />
     ));
   }
 
@@ -90,20 +86,16 @@ class CSetting extends React.Component {
               <Picker
                 selectedValue={groupID}
                 onValueChange={itemValue => {
-                  AsyncStorage.setItem(
-                    "groupID",
-                    JSON.stringify(itemValue),
-                    () => {
-                      this.setState({
-                        ...this.state,
-                        settings: {
-                          ...this.state.settings,
-                          groupID: itemValue
-                        }
-                      });
-                      this.props.updateGroup(this.state.groupID);
-                    }
-                  );
+                  AsyncStorage.setItem("groupID", itemValue, () => {
+                    this.setState({
+                      ...this.state,
+                      settings: {
+                        ...this.state.settings,
+                        groupID: itemValue
+                      }
+                    });
+                    this.props.updateGroup(this.state.groupID);
+                  });
                 }}
               >
                 {this.renderGroups(this.state.groups)}
