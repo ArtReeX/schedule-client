@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { ButtonGroup } from "react-native-elements";
-import { getSchedule } from "../requests";
+import { getSchedule } from "../services/requests";
 
 class CButtonGroup extends React.PureComponent {
   constructor() {

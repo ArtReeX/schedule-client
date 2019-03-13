@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { View, Picker, AsyncStorage } from "react-native";
 import { Card, Text, Button, Icon } from "react-native-elements";
-import { getGroups } from "../requests";
+import { getGroups, getSchedule } from "../services/requests";
 
 class CSetting extends React.Component {
   constructor(props) {
@@ -18,19 +18,31 @@ class CSetting extends React.Component {
   }
 
   componentDidMount() {
-    getGroups().then(groups => {
-      AsyncStorage.getItem("groupID", (error, groupID) => {
-        if (!error)
-          this.setState({
-            ...this.state,
-            settings: {
-              ...this.state.settings,
-              groupID
-            },
-            groups
-          });
+    getGroups()
+      .then(groups => {
+        AsyncStorage.getItem("groupID", (error, groupID) => {
+          if (!error)
+            this.setState({
+              ...this.state,
+              settings: {
+                ...this.state.settings,
+                groupID
+              },
+              groups
+            });
+        });
+      })
+      .catch(() => {
+        this.setState({
+          ...this.state,
+          groups: [
+            { name: "GroupOne", id: 1 },
+            { name: "GroupTwo", id: 2 },
+            { name: "GroupThree", id: 3 },
+            { name: "GroupFour", id: 4 }
+          ]
+        });
       });
-    });
   }
 
   renderGroups(groups = this.groups) {
@@ -45,7 +57,7 @@ class CSetting extends React.Component {
 
   render() {
     const { settingVisible } = this.state.interface;
-    const { groupID } = this.state.settings;
+    const { day, groupID } = this.state.settings;
 
     return (
       <View>
@@ -76,7 +88,9 @@ class CSetting extends React.Component {
         />
         <View
           nativeID="setting"
-          style={{ display: settingVisible ? "block" : "none" }}
+          style={{
+            display: settingVisible ? "flex" : "none"
+          }}
         >
           <Card>
             <View nativeID="group">
@@ -86,6 +100,13 @@ class CSetting extends React.Component {
               <Picker
                 selectedValue={groupID}
                 onValueChange={itemValue => {
+                  const {
+                    updateGroup,
+                    updateSchedule,
+                    enableLoader,
+                    disableLoader
+                  } = this.props;
+
                   AsyncStorage.setItem("groupID", itemValue, () => {
                     this.setState({
                       ...this.state,
@@ -94,7 +115,13 @@ class CSetting extends React.Component {
                         groupID: itemValue
                       }
                     });
-                    this.props.updateGroup(this.state.groupID);
+                    updateGroup(this.state.groupID);
+                  });
+
+                  enableLoader();
+                  getSchedule(day, groupID).then(response => {
+                    updateSchedule(response);
+                    disableLoader();
                   });
                 }}
               >
@@ -113,6 +140,15 @@ export default connect(
   dispatchEvent => ({
     updateGroup: groupID => {
       dispatchEvent({ type: "UPDATE_GROUP", groupID });
+    },
+    updateSchedule: schedule => {
+      dispatchEvent({ type: "UPDATE_SCHEDULE", schedule });
+    },
+    enableLoader: () => {
+      dispatchEvent({ type: "ENABLE_LOADER" });
+    },
+    disableLoader: () => {
+      dispatchEvent({ type: "DISABLE_LOADER" });
     }
   })
 )(CSetting);
