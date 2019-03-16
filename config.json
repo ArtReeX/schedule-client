@@ -1,7 +1,7 @@
 {
   "server": {
     "protocol": "http",
-    "url": "http://localhost",
-    "port": "8080"
+    "url": "schedule-artreex.herokuapp.com",
+    "port": "80"
   }
 }

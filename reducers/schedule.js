@@ -1,10 +1,8 @@
-const initialState = { currentDiscipline: "-", schedule: [] };
-export default (state = testState, action) => {
+const initialState = [];
+export default (state = initialState, action) => {
   switch (action.type) {
-    case "UPDATE_CURRENT_DISCIPLINE":
-      return { ...state, currentDiscipline: action.currentDiscipline };
     case "UPDATE_SCHEDULE":
-      return { ...state, schedule: action.schedule };
+      return action.lessons;
     default:
       return state;
   }

@@ -6,9 +6,9 @@ const { protocol, url, port } = config.server;
 const getGroups = () => {
   return axios.get(`${protocol}://${url}:${port}/api/groups`);
 };
-const getSchedule = (day, groupID) => {
+const getSchedule = (date, groupId) => {
   return axios.get(`${protocol}://${url}:${port}/api/schedule`, {
-    params: { day, groupID }
+    params: { date, groupId }
   });
 };
 

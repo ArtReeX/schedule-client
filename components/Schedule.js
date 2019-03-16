@@ -10,39 +10,40 @@ class CSchedule extends React.Component {
   }
 
   nameToIcon(name) {
-    switch (name) {
-      case "Физкультура":
-        return "accessibility";
-      case "Базы данных":
-        return "reorder";
-      case "Экономика":
-        return "timeline";
-      case "WEB-программирование":
-        return "code";
-      default:
-        return "label";
-    }
+    name = name.toLowerCase();
+
+    if (name.indexOf("физкультура") !== -1) return "accessibility";
+    if (name.indexOf("экономика") !== -1) return "timeline";
+    if (name.indexOf("базы") !== -1) return "reorder";
+    if (name.indexOf("програм") !== -1) return "code";
+    return "label";
   }
 
-  UTCToDate(utc) {
-    return new Date(utc).toLocaleTimeString("ru");
-  }
+  renderList(lessons) {
+    lessons.forEach(discipline => {
+      const {
+        subject: { name }
+      } = discipline;
 
-  renderList(list) {
-    list.forEach(discipline => {
-      discipline.icon = this.nameToIcon(discipline.name);
+      discipline.icon = this.nameToIcon(name);
     });
 
-    return list.map((discipline, index) => {
-      const { icon, name, teacher, timeStart, timeEnd } = discipline;
+    return lessons.map((discipline, index) => {
+      const {
+        icon,
+        subject: { name, teacherName },
+        beginTime,
+        endTime
+      } = discipline;
+
       return (
         <ListItem
           key={index}
           leftIcon={{ name: icon }}
           title={name}
-          subtitle={teacher}
+          subtitle={teacherName}
           badge={{
-            value: this.UTCToDate(timeStart) + "-" + this.UTCToDate(timeEnd),
+            value: `${beginTime}-${endTime}`,
             containerStyle: { marginTop: -20 }
           }}
         />
@@ -51,10 +52,9 @@ class CSchedule extends React.Component {
   }
 
   render() {
-    const { schedule } = this.props.store.schedule;
     return (
       <View>
-        <ScrollView>{this.renderList(schedule)}</ScrollView>
+        <ScrollView>{this.renderList(this.props.store.schedule)}</ScrollView>
       </View>
     );
   }

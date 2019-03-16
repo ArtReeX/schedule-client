@@ -13,10 +13,10 @@ class CButtonGroup extends React.PureComponent {
     this.selectedDate = this.selectedDate.bind(this);
   }
 
-  selectedDate(day) {
-    const difference = day - new Date().getDay();
+  selectedDate(date) {
+    const difference = date - new Date().getDay();
     const msPerDay = 86400000;
-    const format = "ru-RU";
+    const format = "en-US";
 
     if (difference < 0) {
       return new Date(
@@ -37,13 +37,13 @@ class CButtonGroup extends React.PureComponent {
 
   updateSchedule(selectedIndex) {
     this.setState({ selectedIndex });
-    this.props.updateDay(this.selectedDate(selectedIndex));
+    this.props.updateDate(this.selectedDate(selectedIndex));
 
     const { enableLoader, disableLoader } = this.props;
-    const { day, groupID } = this.props.store.settings;
+    const { date, groupId } = this.props.store.settings;
 
     enableLoader();
-    getSchedule(day, groupID)
+    getSchedule(date, groupId)
       .then(response => {
         updateSchedule(response);
         disableLoader();
@@ -73,11 +73,11 @@ export default connect(
     disableLoader: () => {
       dispatchEvent({ type: "DISABLE_LOADER" });
     },
-    updateDay: day => {
-      dispatchEvent({ type: "UPDATE_DAY", day });
+    updateDate: date => {
+      dispatchEvent({ type: "UPDATE_DATE", date });
     },
-    updateSchedule: params => {
-      dispatchEvent({ type: "UPDATE_SCHEDULE", params });
+    updateSchedule: lessons => {
+      dispatchEvent({ type: "UPDATE_SCHEDULE", lessons });
     }
   })
 )(CButtonGroup);

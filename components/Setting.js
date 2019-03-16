@@ -10,7 +10,7 @@ class CSetting extends React.Component {
     this.state = {
       interface: { settingVisible: false },
       settings: {
-        groupID: 0
+        groupId: 0
       },
       groups: []
     };
@@ -18,46 +18,41 @@ class CSetting extends React.Component {
   }
 
   componentDidMount() {
-    getGroups()
-      .then(groups => {
-        AsyncStorage.getItem("groupID", (error, groupID) => {
-          if (!error)
-            this.setState({
-              ...this.state,
-              settings: {
-                ...this.state.settings,
-                groupID
-              },
-              groups
-            });
-        });
-      })
-      .catch(() => {
-        this.setState({
-          ...this.state,
-          groups: [
-            { name: "GroupOne", id: 1 },
-            { name: "GroupTwo", id: 2 },
-            { name: "GroupThree", id: 3 },
-            { name: "GroupFour", id: 4 }
-          ]
-        });
+    const { updateGroup } = this.props;
+
+    getGroups().then(({ data }) => {
+      AsyncStorage.getItem("groupId", (error, groupId) => {
+        if (!error) {
+          this.setState({
+            ...this.state,
+            settings: {
+              ...this.state.settings,
+              groupId
+            },
+            groups: data.sort((groupOne, groupTwo) => {
+              return groupOne.shortName > groupTwo.shortName;
+            })
+          });
+          updateGroup(groupId);
+        }
       });
+    });
   }
 
-  renderGroups(groups = this.groups) {
-    return groups.map((group, index) => (
+  renderGroups(groups) {
+    return groups.map(({ id, shortName, course }, index) => (
       <Picker.Item
-        label={group.name}
-        value={JSON.stringify(group.id)}
-        key={group.id}
+        label={`${course}-${shortName}`}
+        value={JSON.stringify(id)}
+        key={id}
       />
     ));
   }
 
   render() {
     const { settingVisible } = this.state.interface;
-    const { day, groupID } = this.state.settings;
+    const { groupId } = this.state.settings;
+    const { date } = this.props.store.settings;
 
     return (
       <View>
@@ -98,7 +93,7 @@ class CSetting extends React.Component {
                 Группа
               </Text>
               <Picker
-                selectedValue={groupID}
+                selectedValue={groupId}
                 onValueChange={itemValue => {
                   const {
                     updateGroup,
@@ -107,20 +102,20 @@ class CSetting extends React.Component {
                     disableLoader
                   } = this.props;
 
-                  AsyncStorage.setItem("groupID", itemValue, () => {
+                  AsyncStorage.setItem("groupId", itemValue, () => {
                     this.setState({
                       ...this.state,
                       settings: {
                         ...this.state.settings,
-                        groupID: itemValue
+                        groupId: itemValue
                       }
                     });
-                    updateGroup(this.state.groupID);
+                    updateGroup(groupId);
                   });
 
                   enableLoader();
-                  getSchedule(day, groupID).then(response => {
-                    updateSchedule(response);
+                  getSchedule(date, groupId).then(({ data: { lessons } }) => {
+                    updateSchedule(lessons);
                     disableLoader();
                   });
                 }}
@@ -138,11 +133,11 @@ class CSetting extends React.Component {
 export default connect(
   state => ({ store: state }),
   dispatchEvent => ({
-    updateGroup: groupID => {
-      dispatchEvent({ type: "UPDATE_GROUP", groupID });
+    updateGroup: groupId => {
+      dispatchEvent({ type: "UPDATE_GROUP", groupId });
     },
-    updateSchedule: schedule => {
-      dispatchEvent({ type: "UPDATE_SCHEDULE", schedule });
+    updateSchedule: lessons => {
+      dispatchEvent({ type: "UPDATE_SCHEDULE", lessons });
     },
     enableLoader: () => {
       dispatchEvent({ type: "ENABLE_LOADER" });
