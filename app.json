@@ -24,6 +24,8 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "Приложение (клиентская часть) для просмотра расписания занятий в ЛНУ им. Шевченко.",
+    "githubUrl": "https://github.com/Arthur-Lazarenko/schedule-client"
   }
 }
