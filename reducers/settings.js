@@ -1,5 +1,5 @@
 const initialState = {
-  date: /* new Date().toLocaleDateString("en-US")*/ "03/15/2019",
+  date: new Date().toLocaleDateString("en-US"),
   groupId: 0
 };
 export default (state = initialState, action) => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import { ListItem } from "react-native-elements";
 
 class CSchedule extends React.Component {
@@ -31,6 +31,7 @@ class CSchedule extends React.Component {
     return lessons.map((discipline, index) => {
       const {
         icon,
+        id,
         subject: { name, teacherName },
         beginTime,
         endTime
@@ -40,11 +41,14 @@ class CSchedule extends React.Component {
         <ListItem
           key={index}
           leftIcon={{ name: icon }}
+          leftElement={<Text>{id}</Text>}
           title={name}
           subtitle={teacherName}
+          subtitleStyle={{ color: "grey" }}
           badge={{
-            value: `${beginTime}-${endTime}`,
-            containerStyle: { marginTop: -20 }
+            value: `${beginTime.slice(0, -3)}-${endTime.slice(0, -3)}`,
+            containerStyle: { marginTop: -20 },
+            textStyle: { fontSize: 9 }
           }}
         />
       );
@@ -60,7 +64,4 @@ class CSchedule extends React.Component {
   }
 }
 
-export default connect(
-  state => ({ store: state }),
-  dispatchEvent => ({})
-)(CSchedule);
+export default connect(state => ({ store: state }))(CSchedule);

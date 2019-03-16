@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { View } from "react-native";
 import { Text } from "react-native-elements";
 
-class CInfoString extends React.PureComponent {
+class CCurrent extends React.PureComponent {
   getCurrentLesson(lessons) {
     const currentTimeNumber = Number(
       new Date().toLocaleTimeString("ru-RU").replace(/\D+/g, "")
@@ -38,5 +38,4 @@ class CInfoString extends React.PureComponent {
     );
   }
 }
-
-export default connect(state => ({ store: state }))(CInfoString);
+export default connect(state => ({ store: state }))(CCurrent);

@@ -1,16 +1,18 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { View, Picker, AsyncStorage } from "react-native";
 import { Card, Text, Button, Icon } from "react-native-elements";
-import { getGroups, getSchedule } from "../services/requests";
+import { getGroups } from "../services/requests";
 
 class CSetting extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       interface: { settingVisible: false },
       settings: {
-        groupId: 0
+        groupId: this.props.store.settings.groupId
       },
       groups: []
     };
@@ -18,42 +20,36 @@ class CSetting extends React.Component {
   }
 
   componentDidMount() {
-    const { updateGroup } = this.props;
-
     getGroups().then(({ data }) => {
       AsyncStorage.getItem("groupId", (error, groupId) => {
-        if (!error) {
-          this.setState({
-            ...this.state,
-            settings: {
-              ...this.state.settings,
-              groupId
-            },
-            groups: data.sort((groupOne, groupTwo) => {
-              return groupOne.shortName > groupTwo.shortName;
-            })
-          });
-          updateGroup(groupId);
+        if (error && data[0]) {
+          groupId = data[0].id;
         }
+
+        this.setState({
+          ...this.state,
+          settings: {
+            ...this.state.settings,
+            groupId: Number(groupId)
+          },
+          groups: data.sort((groupOne, groupTwo) => {
+            return groupOne.shortName > groupTwo.shortName;
+          })
+        });
+
+        this.props.updateGroup(groupId);
+        this.props.updateSchedule();
       });
     });
   }
 
   renderGroups(groups) {
     return groups.map(({ id, shortName, course }, index) => (
-      <Picker.Item
-        label={`${course}-${shortName}`}
-        value={JSON.stringify(id)}
-        key={id}
-      />
+      <Picker.Item label={`${course}-${shortName}`} value={id} key={id} />
     ));
   }
 
   render() {
-    const { settingVisible } = this.state.interface;
-    const { groupId } = this.state.settings;
-    const { date } = this.props.store.settings;
-
     return (
       <View>
         <Button
@@ -62,9 +58,13 @@ class CSetting extends React.Component {
               name="settings"
               color="white"
               iconStyle={{ marginRight: "5%" }}
+              size={20}
             />
           }
-          title={settingVisible ? "СКРЫТЬ НАСТРОЙКИ" : "ПОКАЗАТЬ НАСТРОЙКИ"}
+          title={
+            this.state.interface.settingVisible ? "ЗАКРЫТЬ" : "ВЫБРАТЬ ГРУППУ"
+          }
+          titleStyle={{ fontSize: 11 }}
           containerStyle={{ alignContent: "center" }}
           buttonStyle={{
             marginLeft: "10%",
@@ -76,7 +76,7 @@ class CSetting extends React.Component {
               ...this.state,
               interface: {
                 ...this.state.interface,
-                settingVisible: !settingVisible
+                settingVisible: !this.state.interface.settingVisible
               }
             });
           }}
@@ -84,7 +84,7 @@ class CSetting extends React.Component {
         <View
           nativeID="setting"
           style={{
-            display: settingVisible ? "flex" : "none"
+            display: this.state.interface.settingVisible ? "flex" : "none"
           }}
         >
           <Card>
@@ -93,31 +93,23 @@ class CSetting extends React.Component {
                 Группа
               </Text>
               <Picker
-                selectedValue={groupId}
+                selectedValue={this.state.settings.groupId}
                 onValueChange={itemValue => {
-                  const {
-                    updateGroup,
-                    updateSchedule,
-                    enableLoader,
-                    disableLoader
-                  } = this.props;
-
-                  AsyncStorage.setItem("groupId", itemValue, () => {
-                    this.setState({
-                      ...this.state,
-                      settings: {
-                        ...this.state.settings,
-                        groupId: itemValue
-                      }
-                    });
-                    updateGroup(groupId);
-                  });
-
-                  enableLoader();
-                  getSchedule(date, groupId).then(({ data: { lessons } }) => {
-                    updateSchedule(lessons);
-                    disableLoader();
-                  });
+                  AsyncStorage.setItem(
+                    "groupId",
+                    JSON.stringify(itemValue),
+                    () => {
+                      this.setState({
+                        ...this.state,
+                        settings: {
+                          ...this.state.settings,
+                          groupId: itemValue
+                        }
+                      });
+                      this.props.updateGroup(itemValue);
+                      this.props.updateSchedule();
+                    }
+                  );
                 }}
               >
                 {this.renderGroups(this.state.groups)}
@@ -130,20 +122,16 @@ class CSetting extends React.Component {
   }
 }
 
+CSetting.propTypes = {
+  updateSchedule: PropTypes.func.isRequired,
+  updateGroup: PropTypes.func.isRequired
+};
+
 export default connect(
   state => ({ store: state }),
   dispatchEvent => ({
     updateGroup: groupId => {
       dispatchEvent({ type: "UPDATE_GROUP", groupId });
-    },
-    updateSchedule: lessons => {
-      dispatchEvent({ type: "UPDATE_SCHEDULE", lessons });
-    },
-    enableLoader: () => {
-      dispatchEvent({ type: "ENABLE_LOADER" });
-    },
-    disableLoader: () => {
-      dispatchEvent({ type: "DISABLE_LOADER" });
     }
   })
 )(CSetting);

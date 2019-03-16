@@ -1,7 +1,7 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { ButtonGroup } from "react-native-elements";
-import { getSchedule } from "../services/requests";
 
 class CButtonGroup extends React.PureComponent {
   constructor() {
@@ -9,7 +9,6 @@ class CButtonGroup extends React.PureComponent {
     this.state = {
       selectedIndex: new Date().getDay()
     };
-    this.updateSchedule = this.updateSchedule.bind(this);
     this.selectedDate = this.selectedDate.bind(this);
   }
 
@@ -35,28 +34,15 @@ class CButtonGroup extends React.PureComponent {
     }
   }
 
-  updateSchedule(selectedIndex) {
-    this.setState({ selectedIndex });
-    this.props.updateDate(this.selectedDate(selectedIndex));
-
-    const { enableLoader, disableLoader } = this.props;
-    const { date, groupId } = this.props.store.settings;
-
-    enableLoader();
-    getSchedule(date, groupId)
-      .then(response => {
-        updateSchedule(response);
-        disableLoader();
-      })
-      .catch(enableLoader());
-  }
-
   render() {
-    const { selectedIndex } = this.state;
     return (
       <ButtonGroup
-        onPress={this.updateSchedule}
-        selectedIndex={selectedIndex}
+        onPress={selectedIndex => {
+          this.setState({ selectedIndex });
+          this.props.updateDate(this.selectedDate(selectedIndex));
+          this.props.updateSchedule();
+        }}
+        selectedIndex={this.state.selectedIndex}
         buttons={["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"]}
         containerStyle={{ height: 40 }}
       />
@@ -64,20 +50,16 @@ class CButtonGroup extends React.PureComponent {
   }
 }
 
+CButtonGroup.propTypes = {
+  updateSchedule: PropTypes.func.isRequired,
+  updateDate: PropTypes.func.isRequired
+};
+
 export default connect(
   state => ({ store: state }),
   dispatchEvent => ({
-    enableLoader: () => {
-      dispatchEvent({ type: "ENABLE_LOADER" });
-    },
-    disableLoader: () => {
-      dispatchEvent({ type: "DISABLE_LOADER" });
-    },
     updateDate: date => {
       dispatchEvent({ type: "UPDATE_DATE", date });
-    },
-    updateSchedule: lessons => {
-      dispatchEvent({ type: "UPDATE_SCHEDULE", lessons });
     }
   })
 )(CButtonGroup);
